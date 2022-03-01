@@ -1,0 +1,1737 @@
+/*********************************************
+ * common.js
+ * -------------------------------------------
+ * @namespace
+ * - ASAHIKASEI
+ * @constructor
+ * - Util(variable/method)
+ * :variable
+ * - $win
+ * - $doc
+ * - ua
+ * - SMART_UA
+ * - pagePath
+ * - pageW
+ * - breakPoint1
+ * - breakPoint2
+ * - responsive
+ * :method
+ * - isRangeSP
+ * - isRangeTL
+ * - isRangePC
+ * - isNotPC
+ * - isSmartphone
+ * - isTablet
+ * - isTouch
+ * - isIE
+ * - isIE8
+ * - isIE9
+ * - isIE10
+ * - isIE11
+ * - isStorage
+ * - isFontSizeCheck
+ * - isWindowSizeCheck
+ * @module
+ * - respondDevice
+ * - respondBrowser
+ * - smartView
+ * - rollover
+ * - smoothScroll
+ * - sizeFix
+ * - accordion
+ * - tabSwitcher
+ * - headCtrl
+ * - compBox
+ * - equalHeight
+ * @init
+ * @jQuery setFileSize plugin
+ * @requires
+ * - jquery.js
+ * - jquery.plugin.js
+*********************************************/
+
+/* -------------------------------------------
+ * @namespace
+------------------------------------------- */
+var ASAHIKASEI = ASAHIKASEI || {};
+
+
+
+/* -------------------------------------------
+ * @constructor
+------------------------------------------- */
+ASAHIKASEI.Util = function(){
+	this.$win = $(window);
+	this.$doc = $(document);
+	this.ua = navigator.userAgent.toLowerCase();
+	this.SMART_UA = ["iphone","ipad","android","windows phone"];
+	this.pagePath = location.pathname.replace('index.html', '');
+	this.pageW = 1280;
+	this.breakPoint1 = 768;
+	this.breakPoint2 = 768;
+	this.responsive = false;
+};
+
+ASAHIKASEI.Util.prototype = {
+	/*
+	 * @method isRangeSP
+	 * @return {Boolean}
+	 */
+	isRangeSP: function(){
+		var winW = this.$win.width(),
+			innerW = window.innerWidth ? window.innerWidth: this.$win.width(),
+			outerW = window.outerWidth;
+		//return (winW <= this.breakPoint1) ? true : false;
+		return (innerW <= this.breakPoint1 && outerW <= this.breakPoint1) ? true : false;
+	},
+
+	/*
+	 * @method isRangeTL
+	 * @return {Boolean}
+	 */
+	isRangeTL: function(){
+		var winW = this.$win.width(),
+			innerW = window.innerWidth ? window.innerWidth: this.$win.width(),
+			outerW = window.outerWidth;
+		//return ((this.breakPoint1 < winW) && (winW <= this.breakPoint2)) ? true : false;
+		return ((this.breakPoint1 < innerW && this.breakPoint1 < outerW) && (innerW <= this.breakPoint2 && outerW <= this.breakPoint2)) ? true : false;
+	},
+
+	/*
+	 * @method isRangePC
+	 * @return {Boolean}
+	 */
+	isRangePC: function(){
+		var winW = this.$win.width(),
+			innerW = window.innerWidth ? window.innerWidth: this.$win.width(),
+			outerW = window.outerWidth;
+		//return (this.breakPoint2 < winW) ? true : false;
+		return (this.breakPoint2 < innerW && this.breakPoint2 < outerW) ? true : false;
+	},
+
+	/*
+	 * @method isNotPC
+	 * @return {Boolean}
+	 */
+	isNotPC: function(){
+		var uaArray = new RegExp(this.SMART_UA.join("|"),"i");
+		return uaArray.test(this.ua);
+	},
+
+	/*
+	 * @method isSmartphone
+	 * @return {Boolean}
+	 */
+	isSmartphone: function(){
+		var UA = {
+			iPhone: this.ua.indexOf('iphone') != -1,
+			iPod: this.ua.indexOf('ipod') != -1,
+			Android: this.ua.indexOf('android') != -1 && this.ua.indexOf('mobile') != -1,
+			WindowsPhone: this.ua.indexOf('windows phone') != -1
+		}
+		return (UA.iPhone || UA.iPod || UA.Android || UA.WindowsPhone) ? true : false;
+	},
+
+	/*
+	 * @method isTablet
+	 * @return {Boolean}
+	 */
+	isTablet: function(){
+		var UA = {
+			iPad: this.ua.indexOf('ipad') != -1,
+			Android: this.ua.indexOf('android') != -1 && this.ua.indexOf('mobile') == -1
+		}
+		return (UA.iPad || UA.Android) ? true : false;
+	},
+
+	/*
+	 * @method isTouch
+	 * @return {Boolean}
+	 */
+	isTouch: function(){
+		return ('ontouchstart' in window) ? true : false;
+	},
+
+	/*
+	 * @method isIE
+	 * @return {Boolean}
+	 */
+	isIE: function(){
+		return (this.ua.indexOf("msie") != -1 || this.ua.indexOf("trident") != -1) ? true : false;
+	},
+	/*
+	 * @method isIE8
+	 * @return {Boolean}
+	 */
+	isIE8: function(){
+		return (this.ua.indexOf("msie 8") != -1) ? true : false;
+	},
+
+	/*
+	 * @method isIE9
+	 * @return {Boolean}
+	 */
+	isIE9: function(){
+		return (this.ua.indexOf("msie 9") != -1) ? true : false;
+	},
+
+	/*
+	 * @method isIE10
+	 * @return {Boolean}
+	 */
+	isIE10: function(){
+		return (this.ua.indexOf("msie 10") != -1) ? true : false;
+	},
+
+	/*
+	 * @method isIE11
+	 * @return {Boolean}
+	 */
+	isIE11: function(){
+		return ((this.ua.indexOf("rv 11") != -1 || this.ua.indexOf("rv:11") != -1) && (this.ua.indexOf("trident") != -1)) ? true : false;
+	},
+
+	/*
+	 * @method isStorage
+	 * @return {Boolean}
+	 */
+	isStorage: function(){
+		return window.localStorage ? (function(){
+			try {
+				localStorage.setItem('check_key', 1);
+				var check_value = localStorage.getItem('check_key');
+				localStorage.removeItem('check_key');
+				return (check_value == 1);
+			} catch(e) {
+				return false;
+			}
+		})() : false
+	},
+
+	/*
+	 * @method isFontSizeCheck
+	 * @param {function} callback
+	 * - フォントサイズが変更されたら、callbackを実行
+	 */
+	isFontSizeCheck: function(callback){
+		var $elm,
+			HTML_FS_WATCHER = $('<div id="fontSizeWatcher">&nbsp;</div>'),
+			watcherCssObj = {
+				position: "absolute",
+				top: "0",
+				display: "block",
+				padding: "0",
+				visibility: "hidden"
+			},
+			currentSize = 0,
+			interval = 500;
+
+		// 監視用HTMLを生成する
+		HTML_FS_WATCHER.css(watcherCssObj).appendTo("body");
+		$elm = $("#fontSizeWatcher");
+
+		// 要素の高さを取得
+		var getSize = function($elm){ return $elm.height(); };
+
+		// 要素の高さを比較して、異なればcallbackを実行
+		var fontSizeCheck = function(){
+			var h = getSize($elm);
+
+			if(h === currentSize){
+				return false;
+			} else {
+				currentSize = h;
+				callback();
+			}
+		};
+		setInterval(fontSizeCheck, interval);
+	},
+
+	/*
+	 * @method isWindowSizeCheck
+	 * @param {function} callback
+	 * - windowのリサイズ処理が完了したら、callbackを実行
+	 */
+	isWindowSizeCheck: function(callback){
+		var resize = false,
+			interval = 500;
+
+		this.$win.on("resize", function(){
+			// リサイズされている間は何もしない
+			if(resize !== false){ clearTimeout(resize); }
+
+			resize = setTimeout(function(){
+				callback();
+			}, interval);
+		});
+	}
+
+};
+
+
+
+/* -------------------------------------------
+ * @module
+------------------------------------------- */
+ASAHIKASEI.module = function(){
+	var u = new ASAHIKASEI.Util();
+
+	return {
+		/*
+		 * @method initialize
+		 * - 初期化
+		 */
+		initialize: function(){
+			this.respondDevice();
+			this.respondBrowser();
+			this.smartView();
+			this.rollover();
+			this.smoothScroll();
+			this.sizeFix();
+			this.accordion();
+			this.accordion({
+				targetElm: ".compBox",
+				dispType: "select",
+				toggleBtnClass: ".compBoxTitle",  // 開閉ボタン
+				togglePanelClass: ".compBoxDetail"
+			});
+			this.tabSwitcher();
+			this.headCtrl();
+			this.pageTopControl();
+			this.pulldown();
+			this.tabNagation();
+			this.currentCategory();
+			this.linkCtrl();
+			this.resizeReload();
+			this.contacteqHeight();
+			this.hashPositionChecker();
+			this.customSelect();
+			this.widthFix();
+			this.imgHeightFix();
+			this.elementsSwap();
+			this.lnavCurrent();
+			//this.equalHeight(true, true);  ※ロード時に実行
+		},
+
+		/*
+		 * @method respondDevice
+		 * - デバイス対応
+		 */
+		respondDevice: function(){
+			/* スマホ以外の場合 */
+			if(!u.isSmartphone()){
+				// 電話番号のリンク削除
+				$('a[href^="tel:"]').each(function(){
+					$(this).find("> *").unwrap();
+				});
+			}
+			/* PC以外の場合 */
+			if(u.isNotPC()){
+				// CSS調整
+				$("#globalHeader").css({"position": "relative"});
+				$("#globalContents").css({"marginTop": 0});
+				$(".titleWrap").css({"backgroundPosition": "0 0"});
+				$(".headerWrap01 #headerNavi .megaMenu").css({"backgroundPosition": "0 0"});
+			}
+			/* Androidスマホの場合 */
+			if(u.ua.indexOf('android') != -1 && u.ua.indexOf('mobile') != -1){
+				// Android4系のバグ対応
+				$("#headerInfo > .tagline").css("backgroundColor", "#fff")
+			}
+		},
+
+		/*
+		 * @method respondBrowser
+		 * - ブラウザ対応
+		 */
+		respondBrowser: function(){
+			/* IE8の場合 */
+			if(u.isIE8()){
+				// 透過PNG対応
+				$('img[src$="png"]').each(function(){
+					$(this).css({
+						"background": "transparent",
+						"filter": 'progid:DXImageTransform.Microsoft.AlphaImageLoader(src="' + $(this).attr("src") + '", sizingMethod="scale");'
+					});
+				});
+			}
+			/* IE8/IE9の場合 */
+			if(u.isIE8() || u.isIE9()){
+				// cssPIE対応
+				u.$win.on("load", function(){
+					if(window.PIE){
+						$(".pie").css({
+							"position": "relative",
+							"zoom": 1
+						}).each(function(){
+							PIE.attach(this);
+						});
+					}
+				});
+			}
+			/* IEの場合 */
+
+			/* Chromeの場合 */
+
+		},
+
+		/*
+		 * @method smartView
+		 * - viewport対応
+		 */
+		smartView: function(){
+			var viewPoint = u.pageW;
+
+			if(u.isTablet()){
+				$("body").css("width", viewPoint + "px");
+				$("meta[name='viewport']").attr("content", "width=" + viewPoint);
+			} else if(u.isSmartphone()){
+				$("meta[name='viewport']").attr("content", "width=device-width, initial-scale=1, minimum-scale=1.0");
+			}
+		},
+
+		/*
+		 * @method rollover
+		 * - ロールオーバー
+		 */
+		rollover: function(){
+			/* vars
+			------------------------------- */
+			var $elm = $(".rollover"),
+				onSuffix = "on";
+
+			if($elm.length === 0 || u.isNotPC()){
+				return false;
+			}
+
+			/* function
+			------------------------------- */
+			var src = {
+				over: function($elm){return $elm.attr("src").replace(/^(.+)(\.[a-z]+)$/, "$1" + onSuffix + "$2");},
+				out: function($elm){return $elm.attr("src").replace(new RegExp("^(.+)" + onSuffix + "(\.[a-z]+)$" ), "$1$2");},
+				preload: function($elm){return $elm.attr("src").replace(/^(.+)(\.[a-z]+)$/, "$1" + onSuffix + "$2");}
+			};
+
+			/* trigger
+			------------------------------- */
+			$elm
+				.hover(function(){
+					$(this).attr("src", src.over($(this)));
+				}, function(){
+					$(this).attr("src", src.out($(this)));
+				})
+				.each(function(){
+					$("<img>").attr("src", src.preload($(this)));
+				});
+		},
+
+		/*
+		 * @method smoothScroll
+		 * - スムーススクロール
+		 */
+		smoothScroll: function(){
+			/* vars
+			------------------------------- */
+			var $header = $("#globalHead"),
+				noScrollClass = ".noScroll",
+				fixedName = "fixed",
+				fixHeight = 55,
+				adjustHeight = 1,
+				url = $(location).attr("href"),
+				hash = location.hash,
+				href,
+				anc,
+				position,
+				webkit = /webkit/,
+				speed = 800,
+				easing = "swing";
+
+			/* trigger
+			------------------------------- */
+			/* スクロール制御 */
+			$("a[href^=#]").not("a[href=#], a[href^=#tab], " + noScrollClass + "").on("click", function(){
+				href = $(this).attr("href");
+				anc = $(href);
+				position = (href=="#pageWrap") ? 0 : anc.offset().top;
+				//fixHeight = $header.height();
+				//if(u.isSmartphone()){
+				if($header.css("position") === "fixed"){
+					position = position - fixHeight - adjustHeight;
+				} else {
+					if($header.hasClass(fixedName)){
+						position = position - adjustHeight;
+					} else {
+						position = position - adjustHeight;
+					}
+				}
+				if(href=="#pageWrap"){
+					position = 0;
+				}
+
+				$("html, body").animate({
+					scrollTop: position
+				}, speed, easing);
+
+				return false;
+			});
+
+			/* ページ遷移＋アンカー移動制御 */
+			u.$win.on("load", function(){
+				if(url.indexOf("#anc") != -1 || url.indexOf("#searchResult") != -1){
+					anc = $(hash);
+					position = anc.offset().top;
+					//fixHeight = $header.height();
+
+					//if(u.isSmartphone()){
+					if($header.css("position") === "fixed"){
+						position = position - fixHeight - adjustHeight;
+					} else {
+						if($header.hasClass(fixedName)){
+							position = position - adjustHeight;
+						} else {
+							position = position - adjustHeight;
+						}
+					}
+
+					$("html, body").animate({
+						scrollTop: position
+					}, speed, easing);
+				}
+			});
+		},
+
+		/*
+		 * @method sizeFix
+		 * - 幅固定
+		 */
+		sizeFix: function(){
+			/* vars
+			------------------------------- */
+			var $elm = $(".sizeFix"),
+				baseName = "baseSize",
+				captionName = "txCaption",
+				setW;
+
+			if($elm.length == 0){
+				return false;
+			}
+			if(u.responsive && u.isSmartphone()){
+				return false;
+			}
+
+			/* function
+			------------------------------- */
+			var sizeSet = function(target){
+				if(u.isSmartphone()){
+					setW = "auto";
+				} else {
+					if(target.find("img").hasClass(baseName)){
+						setW = $("." + c.baseName, target).width();
+					} else {
+						setW = $("img", target).width();
+					}
+				}
+				$('[class*="' + captionName + '"]', target).css("width", setW);
+				target.css("width", setW);
+			};
+
+			/* trigger
+			------------------------------- */
+			$elm.each(function(){
+				var self = $(this);
+
+				// ロード時
+				u.$win.on("load", function(){
+					sizeSet(self);
+				});
+				// リサイズ時
+				u.$win.on("orientationchange resize", function(){
+					sizeSet(self);
+				});
+			})
+		},
+
+		/*
+		 * @method accordion
+		 * - アコーディオン
+		 */
+		accordion: function(config){
+			/* options
+			------------------------------- */
+			var c = $.extend({
+				targetElm: ".toggleWrap",
+				dispType: "allHide",  // 初期表示設定：「allHide」or「allShow」or「select」
+				firstDisplay: 0,  // 初期表示対象
+				toggleBtnClass: ".toggleBtn",  // 開閉ボタン
+				togglePanelClass: ".togglePanel",  // 開閉パネル
+				relType: "brother",  // 開閉ボタン（クリックエリア）と開閉パネルの位置関係：「parent_child」or「brother」
+				switchClassName: "active",  // 切り替えクラス
+				closeBtnClass: ".closeBtn",  // 「閉じる」ボタン
+				slideSpeed : 200  // スライドスピード
+			}, config);
+
+			/* vars
+			------------------------------- */
+			var $elm = $(c.targetElm),
+				toggleBtn = $(c.toggleBtnClass, $elm),
+				togglePanel = $(c.togglePanelClass, $elm),
+				targetBtn,
+				targetPanel,
+				isRelBorther;
+
+			if($elm.length == 0){
+				return false;
+			}
+
+			/* settings
+			------------------------------- */
+			/* 開閉ボタン（クリックエリア）と開閉パネルの位置関係が兄弟関係かどうか */
+			if(c.relType == "parent_child"){
+				isRelBorther = false;
+			} else if(c.relType == "brother"){
+				isRelBorther = true;
+			}
+
+			/* 初期表示設定 */
+			switch(c.dispType) {
+				// 全非表示の場合
+				case "allHide":
+					togglePanel.hide();
+					break;
+				// 全表示の場合
+				case "allShow":
+					if(isRelBorther){
+						toggleBtn.addClass(c.switchClassName);
+					} else {
+						toggleBtn.find("a").addClass(c.switchClassName);
+					}
+					break;
+				// 1つだけ表示する場合
+				case "select":
+					if(isRelBorther){
+						toggleBtn.eq(c.firstDisplay).addClass(c.switchClassName);
+					} else {
+						toggleBtn.eq(c.firstDisplay).find("a").addClass(c.switchClassName);
+					}
+					togglePanel.hide();
+					togglePanel.eq(c.firstDisplay).show();
+					break;
+				default:
+					break;
+			}
+
+			/* trigger
+			------------------------------- */
+			toggleBtn.each(function(){
+				if(isRelBorther){
+					$(this).on("click", function(){
+						targetBtn = $(this);
+						targetPanel = targetBtn.next();
+
+						targetBtn.toggleClass(c.switchClassName);
+						targetPanel.slideToggle(c.slideSpeed);
+
+						// 高さ揃え実行
+						ASAHIKASEI.module.equalHeight();
+					});
+				} else {
+					$(this).on("click", "a", function(){
+						targetBtn = $(this).parent(c.toggleBtnClass);
+						targetPanel = targetBtn.next();
+
+						targetBtn.find("a").toggleClass(c.switchClassName);
+						targetPanel.slideToggle(c.slideSpeed);
+
+						// 高さ揃え実行
+						ASAHIKASEI.module.equalHeight();
+					});
+				}
+			});
+
+			/* 「閉じる」ボタン制御 */
+			$(c.closeBtnClass).on("click", "a", function(){
+				targetPanel = $(this).parents(c.togglePanelClass);
+				targetBtn = targetPanel.prev();
+
+				targetPanel.slideUp(c.slideSpeed);
+				if(isRelBorther){
+					targetBtn.removeClass(c.switchClassName);
+				} else {
+					targetBtn.find("a").removeClass(c.switchClassName);
+				}
+			});
+		},
+
+		/*
+		 * @method tabSwitcher
+		 * - タブ切り替え
+		 */
+		tabSwitcher: function(config){
+			/* options
+			------------------------------- */
+			var c = $.extend({
+				containerName: ".tabWrap",
+				noSwitchName: "noSwitch",
+				naviClass: ".tabNavi",
+				panelClass: ".tabPanel",
+				currentName: "on",
+				firstTarget: ""  // 初期表示対象：タブのidを指定（※何も指定しなければ一番最初のタブを表示）
+			}, config);
+
+			/* vars
+			------------------------------- */
+			var $container = $(c.containerName),
+				tabNavi = $(c.naviClass, $container),
+				tabPanel = $(c.panelClass, $container),
+				firstPanel,
+				targetTab,
+				targetPanel;
+
+			if($container.length == 0){
+				return false;
+			}
+
+			/* setting
+			------------------------------- */
+			/* タブの数をclassとして付与 */
+			$container.each(function(){
+				var tab = $(this),
+					btn = $(".tabNavi.type-head > .tabBtn", tab),
+					num = $("> li", btn).length;
+				$(".tabBtn", tab).addClass("count" + num);
+			});
+
+			/* trigger
+			------------------------------- */
+			$container.not("." + c.noSwitchName).each(function(){
+				targetTab = $(this);
+				tabNavi = $(c.naviClass, targetTab);
+				tabPanel = $(c.panelClass, targetTab);
+
+				/* 初期表示 */
+				if(c.firstTarget != ""){  // JS側で初期表示タブに指定がある場合
+					firstPanel = c.firstTarget;
+				} else if(tabNavi.find("li").hasClass(c.currentName)){  // HTML側で現在地の指定がある場合
+					firstPanel = $("." + c.currentName, targetTab).find("a").attr("href");
+				} else {
+					firstPanel = tabNavi.find("li:first a").attr("href");
+				}
+				tabNavi.find("a[href = '"+ firstPanel +"']").parent().addClass(c.currentName);
+				tabPanel.show().not(firstPanel).hide();
+
+				/* 「タブボタン」クリック制御 */
+				tabNavi.on("click", "a", function(){
+					var self = $(this);
+
+					if(self.parent().hasClass(c.currentName)){
+						return false;
+					} else {
+						targetPanel = self.attr("href");
+						targetTab = self.parents(c.containerName);
+						tabNavi = $(c.naviClass, targetTab);
+						tabPanel = $(c.panelClass, targetTab);
+
+						tabNavi.find("li").removeClass(c.currentName);
+						tabNavi.find("a[href = '"+ targetPanel +"']").parent().addClass(c.currentName);
+						tabPanel.show().not(targetPanel).hide();
+
+						// 高さ揃え実行
+						ASAHIKASEI.module.equalHeight();
+
+						return false;
+					}
+				});
+			});
+		},
+
+		/**
+		 * @method equalHeight
+		 * @param {Boolean} 文字可変に対応するかどうか
+		 */
+		equalHeight: function(fsCheck, wsCheck){
+			var className = ".equalHeight",
+				childBaseName = "equalChild",
+				$elm = $(className),
+				$children = $elm.children(),
+				fsCheck = fsCheck || false,
+				wsCheck = wsCheck || true;
+
+			if($elm.length === 0 || $children.length < 2){ return false; }
+
+			/* 各要素ごとにグループ化 */
+			var grouping = function(){
+				var $groupedChildren = $elm.find('*[class*=' + childBaseName + ']'),
+					classNames = {},groups = [];
+
+				$groupedChildren.each(function(){
+					var splitClass = $(this).attr("class").split(" "),
+						splitClassNum = splitClass.length,
+						newClassName;
+
+					for(var i = 0; i < splitClassNum; i++){
+						newClassName = splitClass[i].match(RegExp(childBaseName + "[a-z0-9]+", 'i'));
+
+						if(!newClassName){
+							continue;
+						} else {
+							newClassName.toString();
+							classNames[newClassName] = newClassName;
+						}
+					}
+				});
+
+				for(var c in classNames){
+					groups.push($elm.find("." + c));
+				}
+
+				groups.push($children);
+				return groups;
+			};
+
+			/* 各要素の高さを揃える */
+			var equalHeight = function(elm){
+				var maxHeight = 0;
+				elm.css("height", "auto");
+
+				elm.each(function(){
+					if($(this).height() > maxHeight){
+						maxHeight = $(this).height();
+					}
+				});
+				return elm.height(maxHeight);
+			};
+
+			/* init */
+			var init = function(){
+				var groups = grouping(),
+					h = [],
+					child = [],
+					maxHeight = 0,
+					top = 0;
+
+				$.each(groups, function(){
+					var $group = $(this).not(":hidden");
+
+					$group.each(function(i){
+						$(this).css("height", "auto");
+						h[i] = $(this).height();
+
+						if(top != $(this).position().top){
+							equalHeight($(child));
+							child = [];
+							top = $(this).position().top;
+						}
+						child.push(this);
+					});
+				});
+				if(child.length > 1){ equalHeight($(child)); }
+			};
+
+			// 文字可変への対応可否
+			fsCheck ? u.isFontSizeCheck(init) : init();
+			wsCheck ? u.isWindowSizeCheck(init) : init();
+		},
+
+		/*
+		 * @method headCtrl
+		 * - ヘッダー制御
+		 */
+		headCtrl: function(config){
+			var $elm = $('#globalHead'),
+				$pageWrap = $('#pageWrap'),
+				$header = $('#header'),
+				$contents = $('#contents'),
+				$footer = $('#footer'),
+				$siteUtility = $('#siteUtility'),
+				gNav = '#globalNav',
+				nav = '.globalNavMenu',
+				$nav = $(nav),
+				$navItem = $('.hasMenu', $nav),
+				layer = '.menuLayer',
+				panel = '.menuPanel',
+				langArea = '#siteUtilityLang',
+				searchArea = '#searchField',
+				fixedName = 'is-fixed',
+				lowerName = 'is-lower',
+				activeName = 'is-active',
+				scrollName = 'scroll',
+				bodyState = 'bodyFixed',
+				winW = u.$win.width(),
+				speed = 'fast',
+				easing = 'swing';
+
+			if($elm.length==0) {return false;}
+			/*
+				PC / SP共通 ユーティリティ制御
+			*/
+			util_lang = function(){
+				var $switch = $('.langBtn', $siteUtility);
+
+				$switch.on('click', function(){
+					switch($(langArea).is(':hidden')){
+						case true:
+							$(this).addClass(activeName);
+							$(langArea).slideDown(speed);
+							$siteUtility.append('<div class="langOverlay"></div>');
+							break;
+						case false:
+							$(this).removeClass(activeName);
+							$(langArea).slideUp(speed);
+							$('.langOverlay').remove();
+					}
+				});
+			};
+
+			util_search = function(){
+				var $switch = $('.openSearch'),
+					search_over_flg = true;;
+
+				if($(searchArea).length==0) {return false;}
+				hideItem = function(){
+					$switch.removeClass(activeName);
+					$(searchArea).stop(true, true).fadeOut(speed);
+				}
+				showItem = function(self, obj){
+					switch($(obj).is(':hidden')){
+						case true:
+							$(self).addClass(activeName);
+							$(searchArea).stop(true, true).fadeIn(speed);
+							break;
+						case false:
+							hideItem();
+					}
+				}
+
+				$switch.on('click', function(){
+					showItem(this, searchArea);
+					if(winW < u.breakPoint1){
+						hideMenu();
+					}
+					return false;
+				});
+				$('#pageWrap').on("click", function(e){
+					if(!$.contains($(searchArea).get(0), e.target)){
+						hideItem();
+					}
+				});
+			};
+
+			var util_overLay = function(){
+				$siteUtility.on('click', '.langOverlay', function(){
+					$(langArea).removeClass(activeName);
+					$(langArea).slideUp(speed);
+					$('.langOverlay').remove();
+				});
+			}
+
+			/* INIT */
+			util_overLay();
+			util_lang();
+			util_search();
+
+			if(winW >= u.breakPoint1) {
+				/*
+				  PC ヘッダー制御
+				*/
+				var breakH = 50;
+
+				u.$win.on('load scroll', function(){
+					var winH = u.$win.height(),
+						docH = u.$doc.height(),
+						contentH = $contents.height(),
+						footerH = $footer.height(),
+						footerY = $footer.offset().top,
+						scrollY = $(this).scrollTop(),
+						bottomY = winH + scrollY,
+						contentMinH = docH - 50 - footerH,
+						headInnerH = 0;
+					$('> *', $header).each(function(){
+						var childH = $(this).outerHeight();
+						headInnerH = headInnerH + childH;
+					});
+
+					if(scrollY < breakH) {
+						$header.removeClass(lowerName);
+						$header.removeClass(fixedName);
+						$header.css({
+							'max-height': contentH,
+							'height': winH-50,
+							'top': 0
+						});
+					} else if(scrollY >= breakH && bottomY < footerY) {
+						$header.removeClass(lowerName).addClass(fixedName).css({
+							'max-height': contentH,
+							'height': winH,
+							'top': 0
+						});
+					} else if(bottomY >= footerY) {
+						$header.removeClass(fixedName).addClass(lowerName).css({
+							'max-height': winH,
+							'height': winH,
+							'top': footerY - winH
+						});
+						$(layer).fadeOut();
+						$navItem.removeClass(activeName);
+					}
+				});
+
+
+				/*
+				  PC グローバルナビ制御
+				*/
+				layerScroll = function(target){
+					var maxH = winH = u.$win.height()-50;
+					$(layer, $header).removeClass(scrollName).css('height', 'auto');
+					if(target.height() > maxH){
+						target.addClass(scrollName).css('height', maxH);
+					}
+				}
+
+				u.$win.on('resize', function(){
+					layerScroll($(layer, $header).not(':hidden'));
+				});
+
+				gNavCtrl = function(){
+					var over_flg = false;
+
+					if($navItem.length === 0){return false;};
+					hidePanel = function(self, obj){
+						self.removeClass(activeName);
+						obj.stop(true, true).fadeOut(speed);
+					}
+					showPanel = function(self, obj){
+						obj.stop(true, true).fadeIn(speed);
+						layerScroll(obj)
+						switch(!$(obj).hasClass(activeName)){
+							case true:
+								self.addClass(activeName);
+								ASAHIKASEI.module.equalHeight();
+								break;
+							case false:
+								hidePanel();
+						}
+					}
+
+					$navItem.children('a').on('click' , function(){
+
+						var $parent = $(this).closest('li'),
+							$child = $parent.children(layer),
+							layerH = $child.height(),
+							winBreakH = u.$win.height();
+
+						if($child.is(':hidden')){
+							hidePanel($parent, $(layer, $navItem));
+							showPanel($parent, $child);
+							$navItem.removeClass(activeName);
+							$parent.addClass(activeName);
+						} else {
+							hidePanel($parent, $child);
+							$navItem.removeClass(activeName);
+						}
+
+						$('#searchField').hide();
+						$('.openSearch').removeClass(activeName);
+						return false;
+					});
+					$('.openSearch').on('click' , function(){
+						$(layer).hide();
+						$navItem.removeClass(activeName);
+					});
+
+					$(layer).hover(function(){
+						over_flg = true;
+					}, function(){
+						over_flg = false;
+					});
+
+					$('#pageWrap').on("click", function(){
+						if (over_flg == false) {
+							hidePanel($navItem, $(layer, $navItem));
+						}
+					});
+
+				}
+				gNavCtrl();
+			} else {
+				/*
+				  SP ヘッダー制御
+				*/
+				$elm.addClass({
+					'position': 'fixed',
+					'top': 0,
+					'left': 0
+				});
+
+				/*
+				  SP グローバルナビ制御
+				*/
+				var $spMenuBtn = $('.spMenuBtn', $siteUtility),
+					$contactBtn = $('.utilityBtn .contactBtn');
+
+				/* 要素の入れ替え */
+				$(nav).append($contactBtn);
+
+				/* メニューの表示非表示制御 */
+				hideMenu = function(){
+					$spMenuBtn.removeClass(activeName);
+					$(gNav).stop(true, true).animate({'left': '100%'}, function(){$(gNav).hide();});
+				}
+				showMenu = function(obj){
+					switch(!$(obj).hasClass(activeName)){
+						case true:
+							$(gNav).show();
+							$(obj).addClass(activeName);
+							$(gNav).stop(true, true).animate({'left': 0});
+							break;
+						case false:
+							hideMenu();
+							break;
+					}
+				}
+
+				spGNavCtrl = function(){
+
+					if($navItem.length === 0){return false;};
+
+					/* メニュー内アコーディオン制御 */
+					$navItem.children('a').on('click' , function(){
+						$child = $(this).parent('li').children(layer);
+						if($child.is(':hidden')){
+							$(this).parent('li').addClass(activeName).children(layer).stop().slideDown();
+						} else {
+							$(this).parent('li').removeClass(activeName).children(layer).stop().slideUp();
+						}
+						return false;
+					});
+				}
+				spGNavCtrl();
+
+				$spMenuBtn.on('click', function(){showMenu(this); hideItem(); return false;});
+				$('#pageWrap').on("click", function(e){
+					if(!$.contains($(gNav).get(0), e.target)){
+						hideMenu();
+					}
+				});
+			};
+		},
+
+		/*
+		 * @method pageTopControl
+		 * - 「ページトップ」ボタン制御
+		 */
+		pageTopControl: function(){
+			/* vars
+			------------------------------- */
+			var $elm = $("#toPagetop"),
+				stopName = "stop",
+				footerH = $("#footer").height(),
+				winH,
+				docH,
+				scrollY,
+				posY,
+				fadeSpeed = 500,
+				winW = u.$win.width();
+
+			if($elm.length == 0){
+				return false;
+			}
+
+			/* setting
+			------------------------------- */
+			// 初期非表示
+			$elm.hide();
+
+			/* trigger
+			------------------------------- */
+			// スクロール制御
+			u.$win.on("scroll", function(){
+				winH = u.$win.height();
+				docH = u.$doc.height();
+				// スクロールした高さ取得
+				scrollY = $(this).scrollTop();
+				// 現在のトップからの位置取得
+				posY = winH + scrollY;
+
+				// 表示設定
+				if($(this).scrollTop() > 100){
+					$elm.fadeIn(fadeSpeed);
+				} else {
+					$elm.fadeOut(fadeSpeed);
+				}
+
+				// 配置設定
+
+				if(winW >= u.breakPoint1) {
+					if(docH - posY <= footerH - 20){
+						$elm.addClass(stopName);
+					} else {
+						$elm.removeClass(stopName);
+					}
+				} else {
+					if(docH - posY <= footerH - 10){
+						$elm.addClass(stopName);
+					} else {
+						$elm.removeClass(stopName);
+					}
+				}
+			});
+		},
+
+		/*
+		 * @method pulldown
+		 * - 疑似プルダウン
+		 */
+		pulldown: function(config){
+			var $elm = $('.pulldown .pdSelect'),
+				$trigger = $('.pdSelectSwitch', $elm),
+				$selectLang = $('.selectItems', $elm),
+				winW = u.$win.width(),
+				speed = 200,
+				easing = 'swing',
+				flg = false;
+
+			if($elm.length === 0){ return false;}
+
+			$elm.on("mouseover",function(){
+				flg = true;
+			}).on("mouseout",function(){
+				flg = false;
+			});
+
+				$trigger.on('click', function(){
+					if($selectLang.is(':hidden')) {
+						$selectLang.stop(true, true).slideDown(speed, easing);
+					} else {
+						$selectLang.stop(true, true).slideUp(speed, easing);
+					}
+				});
+				$(document).on('click', function(){
+					if(flg == false) {
+						$selectLang.stop().slideUp(speed, easing);
+					}
+				});
+		},
+
+		/*
+		 * @method tabNagation
+		 * - タブナビゲーション（SP時プルダウン）
+		 */
+		tabNagation: function(config){
+			var $elm = $('.tabNav'),
+				$selectItem = $('.tabMenu', $elm),
+				hasChildName = '.hasChild',
+				tabChild = '.tabChild',
+				$hasChild = $(hasChildName, $elm),
+				winW = u.$win.width(),
+				speed = 200,
+				easing = 'swing',
+				flg = false;
+
+			if($elm.length === 0){ return false;}
+
+			if(winW >= u.breakPoint1) {
+				$elm.each(function() {
+					$child = $(this).find(hasChildName + '.isCurrent'),
+					$tabChild =  $(this).find(tabChild),
+					isCheck = $child.length;
+
+					if(isCheck != '0'){
+						var childH = $tabChild.height();
+						$(this).addClass('isChild').css('padding-bottom', childH);
+					}
+				});
+			} else {
+				/* tabChildの文言設定 */
+				$hasChild.each(function() {
+					var hasChildText = $(this).children('span, a').text(),
+						$tabChildLink = $(tabChild + ' > li > a', $(this));
+
+					$tabChildLink.prepend(hasChildText + '：');
+				});
+
+				$elm.each(function(){
+					var $trigger = $('.selectedTab', $(this)),
+						$selectItem = $('.tabMenu', $(this)),
+						$tabChild = $(tabChild, $(this)),
+						$isCurrent = $('.isCurrent:not(.hasChild)', $(this));
+
+					/* 現在地設定 */
+					var selectedText = $isCurrent.text();
+					$trigger.append(selectedText);
+					triggerH = $trigger.outerHeight();
+					$selectItem.css('top', triggerH);
+
+					/* hover判定 */
+					$elm.on("mouseover",function(){
+						flg = true;
+					}).on("mouseout",function(){
+						flg = false;
+					});
+
+					/* クリック動作 */
+					$trigger.on('click', function(){
+						if($selectItem.is(':hidden')) {
+							$selectItem.stop(true, true).slideDown(speed, easing);
+						} else {
+							$selectItem.stop(true, true).slideUp(speed, easing);
+						}
+					});
+					$(document).on('click', function(){
+						if(flg == false) {
+							$selectItem.stop(true, true).slideUp(speed, easing);
+						}
+					});
+				})
+			}
+		},
+
+		/*
+		 * @method currentCategory
+		 * - グロナビ現在地表示
+		 */
+		currentCategory: function(){
+			var $container = $('#globalNav'),
+				$elm = $('.hasMenu > a', $container),
+				category = u.pagePath.split('/'),
+				winW = u.$win.width(),
+				currentName = 'is-current';
+
+			if($container.length === 0){ return false;}
+
+			if(winW >= u.breakPoint1) {
+				$elm.each(function() {
+					var navPath = $(this).attr('href').split('/');
+					/*ch UQ Setting*/
+					if(navPath[1] == category[1]) {
+						$(this).addClass(currentName)
+					}
+				});
+			}
+		},
+
+		/*
+		 * @method contacteqHeight
+		 * - contactGrid専用見出し揃え
+		 */
+		contacteqHeight: function(){
+			var winW = u.$win.width();
+			var timer =false;
+			if($(".contactGrid > .grid > .headline06").length > 0 ) {
+				if(winW <= u.breakPoint1) {
+						$(".contactGrid > .grid > .headline06").css("height","auto");
+					}else {
+						timer = setTimeout(function() {
+							var maxHeight = 80;
+							var nowHeight =0;
+							$(".contactGrid > .grid > .headline06").css("height","auto");
+							$(".contactGrid > .grid > .headline06").each(function(){
+								var length = $(this).length;
+								for(i = 0; i < length; i++){
+									var nowHeight = $(this).eq(i).outerHeight();
+									if (nowHeight >= maxHeight ){maxHeight = nowHeight;}
+								}
+							});
+							$(".contactGrid > .grid > .headline06").css("height",maxHeight + "px");
+						}, 200);
+					}
+				$(window).resize(function() {
+					if (timer !== false) {clearTimeout(timer);}
+					if(winW <= u.breakPoint1) {
+						$(".contactGrid > .grid > .headline06").css("height","auto");
+					}else {
+						timer = setTimeout(function() {
+							var maxHeight = 80;
+							var nowHeight =0;
+							$(".contactGrid > .grid > .headline06").css("height","auto");
+							$(".contactGrid > .grid > .headline06").each(function(){
+								var length = $(this).length;
+								for(i = 0; i < length; i++){
+									var nowHeight = $(this).eq(i).outerHeight();
+									if (nowHeight >= maxHeight ){maxHeight = nowHeight;}
+								}
+							});
+							$(".contactGrid > .grid > .headline06").css("height",maxHeight + "px");
+						}, 200);
+					}
+				});
+			}
+		},
+		/*
+		 * @method linkCtrl
+		 * - 別窓アイコン、PDFアイコン、ファイルサイズ取得
+		 */
+		linkCtrl: function(){
+			var href, file, len, point, category,
+				icon = {
+					pdf : '<i class="icon linkIcon-pdf01"></i>',
+					excel : '<i class="icon linkIcon-xls01"></i>',
+					sound : '<i class="icon linkIcon-sound01"></i>',
+					blank : '<i class="icon linkIcon-blank01"></i>',
+					ebook : '<i class="icon linkIcon-ebook01"></i>',
+					movie : '<i class="icon linkIcon-movie01"></i>'
+				};
+
+			$('div#pageWrap div.mainBody a[target="_blank"], a.movie, a.sound, a.ebook, .modalContents a[target="_blank"]').each(function(){
+
+				href = $(this).attr('href').toLowerCase();
+				file = href.split('/');
+				file = file[file.length-1];
+				len = file.length;
+				point = file.lastIndexOf('.');
+				category = file.slice(point , len);
+
+				if(!$(this).parents().is('[id = main-contents]')){
+					// リンク先拡張子別アイコン振り分け+ファイルサイズ取得
+					switch(category){
+						case '.pdf':
+						if((!$(this).is('[href^="http://"], [href^="https://"]')) && ($(this).hasClass('getSize'))){
+							$(this).not(':has(img), [class*="btnType"]').setFileSize(icon.pdf);
+						}else{
+							$(this).not(':has(img), [class*="btnType"]').append(icon.pdf);
+						}
+						break;
+
+						case '.xls':
+						case '.xlsx':
+						if((!$(this).is('[href^="http://"], [href^="https://"]')) && ($(this).hasClass('getSize'))){
+							$(this).not(':has(img), [class*="btnType"]').setFileSize(icon.excel);
+						}else{
+							$(this).not(':has(img), [class*="btnType"]').append(icon.excel);
+						}
+						break;
+
+						case '.flv':
+						case '.mov':
+						case '.avi':
+						case '.mka':
+						case '.mpg':
+						case '.mpeg':
+						case '.mp4':
+						case '.wmv':
+						case '.rm':
+						$(this).not(':has(img), [class*="btnType"]').append(icon.movie);
+						break;
+
+						case '.asf':
+						case '.asx':
+						case '.acd':
+						case '.au':
+						case '.avi':
+						case '.aif':
+						case '.dig':
+						case '.iff':
+						case '.lso':
+						case '.mid':
+						case '.midi':
+						case '.mov':
+						case '.mp3':
+						case '.mpg':
+						case '.msf':
+						case '.qt':
+						case '.ra':
+						case '.ram':
+						case '.rpm':
+						case '.sd':
+						case '.sdn':
+						case '.svx':
+						case '.vqe':
+						case '.vqf':
+						case '.vql':
+						case '.wav':
+						case '.wma':
+						case '.wrk':
+						$(this).not(':has(img), [class*="btnType"]').append(icon.sound);
+						break;
+
+						default:
+						if($(this).hasClass('ebook')){
+							$(this).not(':has(img), [class*="btnType"]').append(icon.ebook);
+						}else if($(this).hasClass('movie')){
+							$(this).not(':has(img), [class*="btnType"]').append(icon.movie);
+						}else if($(this).hasClass('sound')){
+							$(this).not(':has(img), [class*="btnType"]').append(icon.sound);
+						}else{
+							$(this).not(':has(img), [class*="btnType"]').append(icon.blank);
+						}
+						break;
+					}
+				}
+			});
+		},
+		/*
+		 * @method hashPositionChecker
+		 * - SPアンカーに応じたタブ位置調整
+		 */
+		hashPositionChecker: function(){
+			if(u.isNotPC()){
+					var minusHeight = $("#globalHead").height();
+					var nowhash = location.hash;
+					if(nowhash.match(/#tabAnc/)){
+						$(window).on("load", function(){
+							var setPos = $(nowhash).offset().top - (minusHeight*1.2);
+							$('body,html').animate({scrollTop:setPos}, 1);
+						});
+
+					}
+			}
+		},
+		/*
+		 * @method resizeReload
+		 * - PC時リロード処理
+		 */
+		resizeReload: function(){
+			if(u.isNotPC() || u.isIE8()){
+				return false;
+			} else {
+				var timer = false,
+					winW = u.$win.width();
+
+				if(winW >= u.breakPoint1) {
+					pc_flg = true;
+				} else {
+					pc_flg = false;
+				}
+
+				u.$win.on("resize", function(){
+					var winW = u.$win.width();
+
+						if (timer !== false) {
+							clearTimeout(timer);
+						}
+						timer = setTimeout(function() {
+							if(pc_flg){
+								if(winW >= u.breakPoint1) {
+									return false;
+								} else {
+									location.reload();
+								}
+							} else {
+								if(winW >= u.breakPoint1) {
+									location.reload();
+								} else {
+									return false;
+								}
+							}
+						}, 200);
+				});
+			}
+		},
+		/**
+		 * @plugin customSelect
+		 */
+		customSelect: function(){
+			/**
+			 * vars
+			 */
+			var $container = $('.customSelect'),
+				selectItem = '.customSelectItem',
+				selectItemValue = '.customSelectValue';
+			/**
+			 * custom設定
+			 */
+			function valueChange(obj){
+				var selectedVal = obj.children('option:selected').text();
+				obj.prev(selectItemValue).html("<span>" + selectedVal + "</span>");
+			}
+			$(selectItem, $container).on('change', function(){
+				self = $(this);
+				valueChange(self);
+			});
+			$(selectItem, $container).each(function(){
+				self = $(this);
+				valueChange(self);
+			});
+		},
+		/*
+		 * @method widthFix
+		 * - 幅固定
+		 */
+		widthFix: function(){
+			/* vars
+			------------------------------- */
+			var $elm = $(".widthFix"),
+				baseName = "baseSize",
+				captionName = "imgCaption",
+				setW;
+
+			if($elm.length == 0){
+				return false;
+			}
+			if(u.responsive && u.isSmartphone()){
+				return false;
+			}
+
+			/* function
+			------------------------------- */
+
+			var sizeSet = function(target){
+				if(u.$win.width() < u.breakPoint1){
+					target.css("max-width", "none")
+					if(target.find("img").hasClass(baseName)){
+						setW = $("." + baseName, target).width();
+					} else {
+						setW = $("img", target).width();
+					}
+					target.css("max-width", setW + "px");
+				} else {
+					if(target.find("img").attr("width") === ""){
+						if(target.find("img").hasClass(baseName)){
+							setW = $("." + baseName, target).width();
+						} else {
+							setW = $("img", target).width();
+						}
+					} else {
+						if(target.find("img").hasClass(baseName)){
+							setW = $("." + baseName, target).attr("width");
+						} else {
+							setW = $("img", target).attr("width");
+						}
+					}
+					target.css({"max-width": setW + "px", "width": setW + "px"});
+				}
+			};
+
+			/* trigger
+			------------------------------- */
+			$elm.each(function(){
+				var self = $(this);
+
+				u.$win.on("load", function(){
+					sizeSet(self);
+				});
+				// リサイズ時
+				u.$win.on("orientationchange resize", function(){
+					sizeSet(self);
+				});
+			})
+		},
+		/*
+		 * @method imgHeightFix
+		 * - 幅固定
+		 */
+		imgHeightFix: function(config){
+			var c = $.extend({
+				targetName: ".imgGridLayout",
+				baseName: "baseSize",
+				gridName: ".grid",
+				wsCheck: false
+			}, config);
+
+			var $elm = $(c.targetName),
+				$child = $elm.children(c.gridName);
+
+			if($elm.length == 0){return false;}
+
+			var heightSync = function(target){
+				if(u.$win.width() >= u.breakPoint1){
+					var $img = target.find("img"),
+						$widthFix = target.find(".widthFix"),
+						minHeight = 9999;
+
+					$img.css("height", "auto");
+					$widthFix.css("width", "auto");
+					$img.each(function(){
+						if($(this).height() < minHeight){
+							minHeight = $(this).height();
+						}
+					});
+					$img.css("height", minHeight);
+					$widthFix.each(function(){
+						resetW = $(this).find("img").width();
+						$(this).css("width", resetW);
+					});
+				}
+			}
+
+			/* trigger
+			------------------------------- */
+
+			$elm.each(function() {
+				var self = $(this);
+				u.$win.on("load", function(){
+					heightSync(self);
+				});
+				// リサイズ時
+				u.$win.on("orientationchange resize", function(){
+					heightSync(self);
+				});
+			});
+
+		},
+		/**
+		 * @plugin elementsSwap
+		 */
+		elementsSwap: function (config){
+			var c = $.extend({
+				targetName: ".mediaModuleImage",
+				wsCheck: false
+			}, config);
+
+			if($(c.targetName).length === 0){ return false; }
+
+			var $target = $(c.targetName),
+				$this,
+				$wrap,
+				$brother,
+				winW,
+				swap;
+
+			swap = function(){
+				$target.each(function(){
+					$this = $(this);
+					$wrap = $this.parent();
+					$brother = $wrap.children().not($this);
+
+					if(u.$win.width() >= u.breakPoint1){
+						$wrap.append($this).append($brother);
+					} else {
+						$wrap.append($brother).append($this);
+					}
+				});
+			}
+			swap();
+
+			c.wsCheck ? u.isWindowSizeCheck(swap) : swap();
+		},
+		/**
+		 * @plugin lnavCurrent
+		 */
+		lnavCurrent: function (){
+			var url = u.pagePath,
+			path = url.replace("index.html", ""),
+			$elm = $(".relatedLinks-nav .relatedBtnList01").find("a");
+
+			if($elm.length === 0){ return false; }
+
+			$elm.each(function(){
+				var href = $(this).attr("href");
+				if( href == path ) {
+					$(this).closest("li").addClass("isCurrent")
+						return false;
+				};
+			});
+		}
+	}
+}();
+
+
+
+/* -------------------------------------------
+ * @init
+------------------------------------------- */
+$(function(){
+	var u = new ASAHIKASEI.Util();
+
+	ASAHIKASEI.module.initialize();
+
+	/* ロード時 */
+	u.$win.on("load", function(){
+		ASAHIKASEI.module.equalHeight(true, true);
+	});
+});
+
+// jQuery setFileSize plugin
+// リンク参照先のファイルサイズを取得して表示する
+// ---------------------------------------------------------------------
+//add EN & CH UQ Setting
+(function(B){var A="setFileSize";B.fn[A]=function(icon){var E=B(this);function D(F,H,G){var I=false;I=window.ActiveXObject?new ActiveXObject("Microsoft.XMLHTTP"):new XMLHttpRequest();I.open(H,F,G);I.send(null);return I}function C(){return function(){var I=B(this);var G=this.href+"?nocash="+Math.floor(Math.random()*10000);var F=D(G,"HEAD",true);F.onreadystatechange=function(){if(F.readyState==4&&F.status==200){var J=F.getResponseHeader("Content-Length");var K=F.getResponseHeader("Content-Type").replace('vnd.ms-','').replace('vnd.openxmlformats-officedocument.spreadsheetml.sheet','EXCEL');J=parseInt(J,10);var M=[[1024*1024*1024,"GB"],[1024*1024,"MB"],[1024,"KB"],[1,"bytes"]];for(var N=0;N<M.length;N++){var L=M[N][0];var O=M[N][1];if(J>=L){J=J/L;J=Math.ceil(J*10)/10;break}}K=K.split("/")[1].toUpperCase();return H(K,J,O)}};function H(K,J,L){if(I.next("img").length==0){if(I.is(":has(img)")){I.append("<span class='bytes'>("+K+": "+J+L+")</span>");}else{I.append("<span class='bytes'>("+K+": "+J+L+")</span>"+icon);}}else{(I.next("img").attr("src").match(/pdf/))?I.next().after("<span class='bytes'>("+K+": "+J+L+")</span>"):(I.is(":has(img)"))?I.after("<span class='bytes'>("+K+": "+J+L+")</span>"):I.after("<span class='bytes'>("+K+": "+J+L+")</span>"+icon);}}}}E.each(C());return this}})(jQuery);

@@ -1,0 +1,226 @@
+$(document).ready(function(){
+ $("#tb1").hide();
+ $("#tb2").hide();
+});
+
+function setTab(m,n){
+var tli=document.getElementById("menu"+m).getElementsByTagName("li"); /*获取选项卡的LI对象*/
+for(i=0;i<tli.length;i++){
+  tli[i].className=i==n?"hover":""; /*更改选项卡的LI对象的样式，如果是选定的项则使用.hover样式*/
+}
+ $("#tb0").hide();
+ $("#tb1").hide();
+ $("#tb2").hide();
+$("#tb"+n).show();
+}
+
+function setTJ(n){
+var tj = new Array(1,0.001,0.01,1000,1000000,0.2641721,0.0353147,61.0238445,0.001308);
+var tx = new Array("txsheng","txlifangmi","txgongshi","txhaosheng","txlifanghaosheng","txjialun","txlifangyingchi","txlifangyincun","txlifangma");
+var ntx = tx[n];
+var ntj = tj[n];
+var value=$("#"+ntx).val();
+for(i=0;i<tx.length;i++){
+  $("#"+tx[i]).val((value/ntj*tj[i]).toFixed(4));
+}
+}
+
+function setJS(){
+var t1 = $("#txt1").val();
+var t2 = $("#txt2").val();
+var c = $("#txchang").val();
+var k = $("#txkuan").val();
+var g = $("#txgao").val();
+if(t1 == "" || t2 == "" || c == "" || k == "" || g == "")
+{
+	alert("不能为空！");
+	exist();
+}
+$("#txwencha").val(t2-t1);
+var tiji = c*k*g;
+$("#txtiji").val((c*k*g).toFixed(4));
+$("#txswqy").val((101.325 * ((273 + t2) / (273 + t1))).toFixed(4));
+$("#txqiyacha").val((101.325 * ((273 + t2) / (273 + t1)) - 101.325).toFixed(4));
+if (t2 <= 80){
+  $("#txswtiji").val((tiji +( tiji * ((t2 - t1) / 273))).toFixed(4));
+  $("#txtijicha").val((tiji * ((t2 - t1) / 273) ).toFixed(4));   
+                }
+                else if (80 < t2 & t2 < 100)
+                {
+                    $("#txswtiji").val((tiji +(tiji * ((t2 - t1) / 273))).toFixed(4));
+                    $("#txtijicha").val((tiji * ((t2 - t1) / 273)).toFixed(4));
+                   
+                }
+
+                else if (100 < t2 & t2 < 120)
+                {
+                    $("#txswtiji").val((tiji +(tiji * ((t2 - t1) / 273))).toFixed(4));
+                    $("#txtijicha").val((tiji * ((t2 - t1) / 273)).toFixed(4));          
+                }
+
+                else if (120 < t2 & t2 < 150)
+                {
+                    $("#txswtiji").val((tiji +(tiji * ((t2 - t1) / 273))).toFixed(4));
+                    $("#txtijicha").val((tiji * ((t2 - t1) / 273)).toFixed(4));
+                  
+                }
+                else
+                {
+                    $("#txswtiji").val((tiji +(tiji * ((t2 - t1) / 273))).toFixed(4));
+                    $("#txtijicha").val((tiji * ((t2 - t1) / 273)).toFixed(4));
+                   
+                }
+}
+
+function setQW(){
+var tijicha = $("#txtijicha").val();
+var qiwangzhi = $("#txpinghengshijian").val();
+var swqy = $("#txswqy").val();
+if(qiwangzhi == "")
+{
+	alert("不能为空！");
+	exist();
+}
+if(tijicha == "" || swqy == "")
+{
+	alert("请先计算△大气体积或升温后气压！");
+	exist();
+}
+$("#txqiwangjisuan").val((tijicha / qiwangzhi / 1000).toFixed(4));
+$("#txnaishuiya").val((swqy*1.2*102.0408).toFixed(4));
+$("#lbnsyhs").text("耐水压WIP（mmH2O）：");
+}
+
+
+
+function setYL(n){
+var tj = new Array(1,100,1000,1000,100000,0.98692327,750.0616827,2088.5435,14.50377,29.5299,1.01971,10197.16212,10197.16212);
+var tx = new Array("txbar","txKpa","txbpa","txmbar","txPa","txbzdqy","txmmHg","txmpsi","txpsf","txycHg","txkgfcm","txkgfm","txmmsz");
+var ntx = tx[n];
+var ntj = tj[n];
+var value=$("#"+ntx).val();
+for(i=0;i<tx.length;i++){
+  $("#"+tx[i]).val(((value/ntj*tj[i].toFixed(4))).toFixed(4));
+}
+}
+
+function setTJHS(){	
+var cur = $("#txTJHS").val();
+var sel = $("#slTJ").val();
+$("#txTJHS").val(sel);
+var cd = new Array(1,0.1,0.01,0.001);
+var dw = new Array("mm","cm","fm","m");
+var ntj = cd[cur];
+var c = $("#txchang").val();
+var k = $("#txkuan").val();
+var g = $("#txgao").val();
+
+if(c == "" || k == "" || g == "")
+{
+	alert("长宽高不能为空！");
+	$("#slTJ").val(cur);
+	exist();
+}
+c = c/ntj*cd[sel];
+k = k/ntj*cd[sel];
+g = g/ntj*cd[sel];
+$("#txchang").val((c).toFixed(4));
+$("#txkuan").val((k).toFixed(4));
+$("#txgao").val((g).toFixed(4));
+$("#txtiji").val((c*k*g).toFixed(4));
+$("#lbchang").text("长（"+dw[sel]+"）：");
+$("#lbkuan").text("宽（"+dw[sel]+"）：");
+$("#lbgao").text("高（"+dw[sel]+"）：");
+$("#lbtiji").text("密封设备容积（"+dw[sel]+"³）：");
+$("#swdqtj").text("升温后大气体积（"+dw[sel]+"³）：");
+$("#swdqtjc").text("△大气体积（"+dw[sel]+"³）：");
+var t1 = $("#txt1").val();
+var t2 = $("#txt2").val();
+if(t1 == "" || t2 == "")
+{
+	exist();
+}
+setJS();
+}
+
+function setQYHS(){	
+var cur = $("#txQYHS").val();
+var sel = $("#slQY").val();
+$("#txQYHS").val(sel);
+var cd = new Array(1,1000,10,0.01,0.145037);
+var dw = new Array("Kpa","Pa","mbar","bar","PSI");
+var ntj = cd[cur];
+
+
+var swqy = $("#txswqy").val();
+var qyc = $("#txqiyacha").val();
+if(swqy == "" || qyc == "")
+{
+	alert("升温后气压或气压差不能为空！");
+	$("#slQY").val(cur);
+	exist();
+}
+swqy = swqy/ntj*cd[sel];
+qyc = qyc/ntj*cd[sel];
+$("#txswqy").val((swqy).toFixed(4));
+$("#txqiyacha").val((qyc).toFixed(4));
+$("#lbswqy").text("升温后气压（"+dw[sel]+"）：");
+$("#lbqyc").text("△气压差（"+dw[sel]+"）：");
+}
+
+
+function setnsy(){	
+var cur = $("#txnsy").val();
+var sel = $("#slnsy").val();
+$("#txnsy").val(sel);
+var cd = new Array(1,9.81,0.098,0.0001,0.001422);
+var dw = new Array("mmH2O","pa","mbar","kg/cm2","PSI");
+var ntj = cd[cur];
+
+
+var swqy = $("#txnaishuiya").val();
+if(swqy == "" )
+{
+	alert("耐水压值不能为空！");
+	$("#slQY").val(cur);
+	exist();
+}
+swqy = swqy/ntj*cd[sel];
+$("#txnaishuiya").val((swqy).toFixed(4));
+$("#lbnsyhs").text("耐水压WIP（"+dw[sel]+"）：");
+
+}
+
+
+
+function cdsjqc(){	
+
+$("#txlifangmi").val('');
+$("#txgongshi").val('');
+$("#txsheng").val('');
+$("#txhaosheng").val('');
+$("#txlifanghaosheng").val('');
+$("#txjialun").val('');
+$("#txlifangyingchi").val('');
+$("#txlifangyincun").val('');
+$("#txlifangma").val('');
+
+}
+
+function ylsjqc(){	
+
+$("#txbar").val('');
+$("#txKpa").val('');
+$("#txbpa").val('');
+$("#txmbar").val('');
+$("#txPa").val('');
+$("#txbzdqy").val('');
+$("#txmmHg").val('');
+$("#txmpsi").val('');
+$("#txpsf").val('');
+$("#txycHg").val('');
+$("#txkgfcm").val('');
+$("#txkgfm").val('');
+$("#txmmsz").val('');
+
+}
